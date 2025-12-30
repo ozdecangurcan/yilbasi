@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Yeni Yıl Sürprizi</title>
+
+<style>
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  background: linear-gradient(180deg, #0f2027, #203a43, #2c5364);
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+#startBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 18px 30px;
+  font-size: 18px;
+  border-radius: 16px;
+  border: none;
+  background: #ffcc00;
+  font-weight: bold;
+  z-index: 10;
+}
+
+.message {
+  position: absolute;
+  top: 22%;
+  width: 100%;
+  text-align: center;
+  font-size: 28px;
+  color: white;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.message.show {
+  opacity: 1;
+}
+
+.flower, .confetti, .rabbit {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* 🔊 Küçük ses aç butonu */
+#unmuteBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 14px;
+  border-radius: 50px;
+  border: none;
+  background: rgba(0,0,0,0.65);
+  color: white;
+  font-size: 14px;
+  z-index: 30;
+  display: none;
+}
+</style>
+</head>
+
+<body>
+<div id="app">
+  <button id="startBtn">Yeni Yıl Sürprizi 🎁</button>
+
+  <div id="msg" class="message">
+    🎆 Mutlu Yıllar! 🎆<br />
+    Sağlık, mutluluk ve başarı seninle olsun
+  </div>
+</div>
+
+<!-- 🎵 YouTube (1x1 px ama DOM'da görünür) -->
+<div style="
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+">
+  <iframe
+    id="yt"
+    width="1"
+    height="1"
+    frameborder="0"
+    allow="autoplay; encrypted-media"
+    playsinline>
+  </iframe>
+</div>
+
+<button id="unmuteBtn" onclick="unmute()">🔊 Sesi Aç</button>
+
+<script>
+const app = document.getElementById("app");
+const btn = document.getElementById("startBtn");
+const msg = document.getElementById("msg");
+const yt = document.getElementById("yt");
+const unmuteBtn = document.getElementById("unmuteBtn");
+
+/* 🎵 Lady Gaga – Judas (35. saniye) */
+const YT_URL =
+  "https://www.youtube.com/embed/wagn8Wrmzuc" +
+  "?autoplay=1" +
+  "&mute=1" +
+  "&start=35" +
+  "&playsinline=1";
+
+/* 🌸 Çiçek loop */
+function flowerLoop() {
+  setInterval(() => {
+    const f = document.createElement("div");
+    f.className = "flower";
+    f.textContent = "🌸";
+    f.style.fontSize = "28px";
+    f.style.left = Math.random() * 100 + "vw";
+    f.style.top = "-40px";
+    app.appendChild(f);
+
+    const a = f.animate(
+      [
+        { transform: "translateY(0)", opacity: 0 },
+        { transform: "translateY(110vh)", opacity: 1 }
+      ],
+      { duration: 4000 }
+    );
+
+    a.onfinish = () => f.remove();
+  }, 250);
+}
+
+/* 🎆 Konfeti loop */
+function confettiLoop() {
+  setInterval(() => {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.textContent = "🎉";
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.top = "-30px";
+    app.appendChild(c);
+
+    const a = c.animate(
+      [
+        { transform: "translateY(0) rotate(0)" },
+        { transform: "translateY(110vh) rotate(720deg)" }
+      ],
+      { duration: 3000 }
+    );
+
+    a.onfinish = () => c.remove();
+  }, 200);
+}
+
+/* 🐰 Tavşan */
+function rabbit(y, delay) {
+  const r = document.createElement("div");
+  r.className = "rabbit";
+  r.textContent = "🐰";
+  r.style.fontSize = "40px";
+  r.style.bottom = y + "px";
+  r.style.left = "-60px";
+  app.appendChild(r);
+
+  function run() {
+    const a = r.animate(
+      [
+        { transform: "translateX(0) scaleX(1)" },
+        { transform: "translateX(90vw) scaleX(1)" },
+        { transform: "translateX(90vw) scaleX(-1)" },
+        { transform: "translateX(0) scaleX(-1)" }
+      ],
+      { duration: 3500, easing: "linear" }
+    );
+    a.onfinish = run;
+  }
+
+  setTimeout(run, delay);
+}
+
+/* 🔊 Ses aç */
+function unmute() {
+  yt.src = yt.src.replace("mute=1", "mute=0");
+  unmuteBtn.remove();
+}
+
+/* ▶️ Başlat */
+btn.addEventListener("click", () => {
+  btn.remove();
+  msg.classList.add("show");
+
+  yt.src = YT_URL;
+  unmuteBtn.style.display = "block";
+
+  flowerLoop();
+  confettiLoop();
+
+  rabbit(30, 0);
+  rabbit(70, 500);
+  rabbit(110, 1000);
+});
+</script>
+</body>
+</html>
