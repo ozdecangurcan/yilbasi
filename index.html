@@ -1,153 +1,148 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Yeni Yıl Sürprizi</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎁 Yeni Yıl Sürprizi</title>
 
-<style>
-html, body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-}
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #0f2027, #203a43, #2c5364);
+      color: white;
+      height: 100%;
+    }
 
-body {
-  background: linear-gradient(180deg, #0f2027, #203a43, #2c5364);
-}
+    #center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 10;
+    }
 
-#app {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-}
+    #startBtn {
+      padding: 18px 28px;
+      font-size: 22px;
+      border-radius: 16px;
+      border: none;
+      background: #ffcc00;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-#startBtn {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 18px 30px;
-  font-size: 18px;
-  border-radius: 16px;
-  border: none;
-  background: #ffcc00;
-  font-weight: bold;
-  z-index: 10;
-}
+    #message {
+      opacity: 0;
+      font-size: 40px;
+      margin-top: 20px;
+      transition: opacity 1s ease;
+      text-align: center;
+    }
 
-.message {
-  position: absolute;
-  top: 22%;
-  width: 100%;
-  text-align: center;
-  font-size: 28px;
-  color: white;
-  opacity: 0;
-  transition: opacity 1s ease;
-}
+    #message.show {
+      opacity: 1;
+    }
 
-.message.show {
-  opacity: 1;
-}
+    /* 🌸 Çiçekler & 🐰 Tavşanlar */
+    .item {
+      position: fixed;
+      top: -60px;
+      font-size: 40px;
+      animation: fall linear infinite;
+      pointer-events: none;
+    }
 
-.flower, .rabbit {
-  position: absolute;
-  pointer-events: none;
-}
-</style>
+    @keyframes fall {
+      from { transform: translateY(-60px); }
+      to { transform: translateY(110vh); }
+    }
+
+    /* 🎵 Player */
+    #playerBox {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      width: 280px;
+      height: 158px;
+      background: rgba(0,0,0,0.6);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+      z-index: 50;
+      display: none;
+    }
+
+    #playerBox iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
 </head>
-
 <body>
-<div id="app">
-  <button id="startBtn">🎁 Yeni Yıl Sürprizi</button>
 
-  <div id="msg" class="message">
-    🎆 Mutlu Yıllar! 🎆<br>
-    Sağlık, mutluluk ve başarı seninle olsun
+  <div id="center">
+    <button id="startBtn">🎁 Yeni Yıl Sürprizi</button>
+    <div id="message">🎆 Mutlu Yıllar 🎆</div>
   </div>
-</div>
 
-<!-- 🎵 YouTube (Safari uyumlu) -->
-<iframe
-  id="yt"
-  style="position:fixed; bottom:10px; left:10px; width:1px; height:1px; opacity:0"
-  allow="autoplay; encrypted-media"
-  playsinline>
-</iframe>
+  <!-- 🎵 YouTube Player -->
+  <div id="playerBox">
+    <iframe
+      id="yt"
+      allow="autoplay; encrypted-media"
+      playsinline>
+    </iframe>
+  </div>
 
-<script>
-const app = document.getElementById("app");
-const btn = document.getElementById("startBtn");
-const msg = document.getElementById("msg");
-const yt = document.getElementById("yt");
+  <script>
+    const btn = document.getElementById("startBtn");
+    const msg = document.getElementById("message");
+    const yt = document.getElementById("yt");
+    const playerBox = document.getElementById("playerBox");
 
-/* 🎵 Lady Gaga – Judas (35. saniyeden, SESLİ) */
-const YT_URL =
-  "https://www.youtube.com/embed/wagn8Wrmzuc" +
-  "?autoplay=1" +
-  "&start=35" +
-  "&playsinline=1";
+    const YT_URL =
+      "https://www.youtube.com/embed/wagn8Wrmzuc" +
+      "?autoplay=1" +
+      "&start=35" +
+      "&playsinline=1";
 
-/* 🌸 Çiçek yağmuru */
-function flowerLoop() {
-  setInterval(() => {
-    const f = document.createElement("div");
-    f.className = "flower";
-    f.textContent = "🌸";
-    f.style.fontSize = "28px";
-    f.style.left = Math.random() * 100 + "vw";
-    f.style.top = "-40px";
-    app.appendChild(f);
+    function spawn(symbol) {
+      const el = document.createElement("div");
+      el.className = "item";
+      el.textContent = symbol;
+      el.style.left = Math.random() * 100 + "vw";
+      el.style.animationDuration = (5 + Math.random() * 5) + "s";
+      document.body.appendChild(el);
 
-    const a = f.animate(
-      [
-        { transform: "translateY(0)", opacity: 0 },
-        { transform: "translateY(110vh)", opacity: 1 }
-      ],
-      { duration: 4000 }
-    );
+      setTimeout(() => el.remove(), 12000);
+    }
 
-    a.onfinish = () => f.remove();
-  }, 250);
-}
+    function flowerLoop() {
+      setInterval(() => spawn("🌸"), 500);
+    }
 
-/* 🐰 Tavşan yağmuru (çiçek gibi) */
-function rabbitLoop() {
-  setInterval(() => {
-    const r = document.createElement("div");
-    r.className = "rabbit";
-    r.textContent = "🐰";
-    r.style.fontSize = "36px";
-    r.style.left = Math.random() * 100 + "vw";
-    r.style.top = "-50px";
-    app.appendChild(r);
+    function rabbitLoop() {
+      setInterval(() => spawn("🐰"), 700);
+    }
 
-    const a = r.animate(
-      [
-        { transform: "translateY(0)", opacity: 0 },
-        { transform: "translateY(110vh)", opacity: 1 }
-      ],
-      { duration: 4500 }
-    );
+    btn.addEventListener("click", () => {
+      btn.remove();
+      msg.classList.add("show");
 
-    a.onfinish = () => r.remove();
-  }, 400);
-}
+      playerBox.style.display = "block";
+      yt.src = YT_URL;
 
-/* ▶️ Başlat */
-btn.addEventListener("click", () => {
-  btn.remove();
-  msg.classList.add("show");
+      flowerLoop();
+      rabbitLoop();
+    });
+  </script>
 
-  // 🔊 Safari uyumlu: SESLİ başlat
-  yt.src = YT_URL;
-
-  flowerLoop();
-  rabbitLoop();
-});
-</script>
 </body>
 </html>
